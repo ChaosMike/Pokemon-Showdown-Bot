@@ -159,12 +159,14 @@ exports.parse = {
 			case 'c':
 				var by = spl[2];
 				this.processChatData(toId(by), room, connection, spl[4]);
+				if (this.isBlacklisted(toId(by), 'global')) this.say(connection, room, '/lock ' + by + ', Blacklisted user');
 				if (this.isBlacklisted(toId(by), room)) this.say(connection, room, '/roomban ' + by + ', Blacklisted user');
 				this.chatMessage(spl[3], by, room, connection);
 				break;
 			case 'c:':
 				var by = spl[3];
 				this.processChatData(toId(by), room, connection, spl[4]);
+				if (this.isBlacklisted(toId(by), 'global')) this.say(connection, room, '/lock ' + by + ', Blacklisted user');
 				if (this.isBlacklisted(toId(by), room)) this.say(connection, room, '/roomban ' + by + ', Blacklisted user');
 				this.chatMessage(spl[4], by, room, connection);
 				break;
@@ -180,6 +182,7 @@ exports.parse = {
 				break;
 			case 'J': case 'j':
 				var by = spl[2];
+				if (this.isBlacklisted(toId(by), 'global')) this.say(connection, room, '/lock ' + by + ', Blacklisted user');
 				if (this.isBlacklisted(toId(by), room)) this.say(connection, room, '/roomban ' + by + ', Blacklisted user');
 				this.updateSeen(toId(by), spl[1], room);
 				if (toId(by) === toId(config.nick) && ' +%@&#~'.indexOf(by.charAt(0)) > -1) this.ranks[room] = by.charAt(0);
@@ -254,11 +257,12 @@ exports.parse = {
 	},
 	isBlacklisted: function(user, room) {
 		var blacklist = this.settings.blacklist;
-		return (blacklist && blacklist[room] && blacklist[room][user]);
+		if (blacklist && blacklist[room] && blacklist[room][user]) return true;
+		return false;
 	},
 	blacklistUser: function(user, room) {
 		var blacklist = this.settings.blacklist;
-		if (!blacklist) this.settings.blacklist = {};
+		if (!blacklist) this.settings.blacklist = blacklist = {};
 		if (!blacklist[room]) blacklist[room] = {};
 
 		if (blacklist[room][user]) return false;

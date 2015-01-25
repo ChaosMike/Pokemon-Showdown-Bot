@@ -20,7 +20,7 @@ exports.commands = {
 		} else {
 			var text = '/pm ' + by + ', ';
 		}
-		text += '**Pokémon Showdown Bot** by: Quinella and TalkTakesTime';
+		text += '**Pokémon Showdown Bot** by: Codelegend, for the Pokelegends Server.';
 		this.say(con, room, text);
 	},
 	help: 'guide',
@@ -270,6 +270,97 @@ exports.commands = {
 		if (notRemoved.length) text += (text.length ? 'No other ' : 'No ') + 'specified users were present in the blacklist.';
 		this.say(con, room, text);
 	},
+	
+	// permanant locks/bans:
+	permaban: function(arg, by, room, con) {
+		if (!this.hasRank(by, '&~')) return false;
+
+		arg = arg.split(',');
+		var added = [];
+		var illegalNick = [];
+		var alreadyAdded = [];
+		if (!arg.length || (arg.length === 1 && !arg[0].trim().length)) return this.say(con, room, 'You must specify at least one user to blacklist.');
+		for (var i = 0; i < arg.length; i++) {
+			var tarUser = toId(arg[i]);
+			if (tarUser.length < 1 || tarUser.length > 18) {
+				illegalNick.push(tarUser);
+				continue;
+			}
+			if (!this.blacklistUser(tarUser, 'global')) {
+				alreadyAdded.push(tarUser);
+				continue;
+			}
+			this.say(con, room, '/lock ' + tarUser + ', Blacklisted user');
+			this.say(con, 'lobby', '/modnote ' + tarUser + ' was added to the blacklist by ' + by + '.');
+			added.push(tarUser);
+		}
+
+		var text = '';
+		if (added.length) {
+			text += 'User(s) "' + added.join('", "') + '" added to permanant blacklist successfully. ';
+			this.writeSettings();
+		}
+		if (alreadyAdded.length) text += 'User(s) "' + alreadyAdded.join('", "') + '" already present in blacklist. ';
+		if (illegalNick.length) text += 'All ' + (text.length ? 'other ' : '') + 'users had illegal nicks and were not blacklisted.';
+		this.say(con, room, text);
+	},
+	
+	unpermaban: function(arg, by, room, con) {
+		if (!this.hasRank(by, '&~')) return false;
+
+		arg = arg.split(',');
+		var removed = [];
+		var notRemoved = [];
+		if (!arg.length || (arg.length === 1 && !arg[0].trim().length)) return this.say(con, room, 'You must specify at least one user to unblacklist.');
+		for (var i = 0; i < arg.length; i++) {
+			var tarUser = toId(arg[i]);
+			if (tarUser.length < 1 || tarUser.length > 18) {
+				notRemoved.push(tarUser);
+				continue;
+			}
+			if (!this.unblacklistUser(tarUser, 'global')) {
+				notRemoved.push(tarUser);
+				continue;
+			}
+			this.say(con, 'lobby', '/unlock ' + tarUser);
+			removed.push(tarUser);
+		}
+
+		var text = '';
+		if (removed.length) {
+			text += 'User(s) "' + removed.join('", "') + '" removed from blacklist successfully. ';
+			this.writeSettings();
+		}
+		if (notRemoved.length) text += (text.length ? 'No other ' : 'No ') + 'specified users were present in the blacklist.';
+		this.say(con, room, text);
+	},
+	
+	vpb: 'viewpermabans',
+	viewpermabans: function(arg, by, room, con) {
+		if (!this.hasRank(by, '&~')) return false;
+
+		var text = '';
+		if (!this.settings.blacklist || !this.settings.blacklist['global']) {
+			text = 'No users are perma-banned';
+		} else {
+			var bl = this.settings.blacklist['global'];
+			if (arg.length) {
+				var nick = toId(arg);
+				if (nick.length < 1 || nick.length > 18) {
+					text = 'Invalid nickname: "' + nick + '".';
+				} else {
+					text = 'User "' + nick + '" is currently ' + (nick in bl ? '' : 'not ') + 'perma-banned';
+				}
+			} else {
+				var nickList = Object.keys(bl);
+				if (!nickList.length) return this.say(con, room, '/pm ' + by + ', No users are perma-banned.');
+				this.uploadToHastebin(con, room, by, 'The following users are perma-banned:\n\n' + nickList.join('\n'))
+				return;
+			}
+		}
+		this.say(con, room, '/pm ' + by + ', ' + text);
+	},
+	
 	viewbans: 'viewblacklist',
 	vab: 'viewblacklist',
 	viewautobans: 'viewblacklist',

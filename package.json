@@ -12,6 +12,7 @@
 	"engineStrict": true,
 	"scripts": {"start": "node main.js"},
 	"bin": "./main.js",
+	"main": "main.js",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/Quinella/Pokemon-Showdown-Bot.git"

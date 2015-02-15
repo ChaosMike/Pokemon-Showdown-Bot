@@ -5,9 +5,36 @@ var cloudenv = require('cloud-env');
 var bindaddress = cloudenv.get('IP', '127.0.0.1');
 var port = cloudenv.get('PORT', 8000);
 
+function getUptimeString() {
+	time = process.uptime();
+
+	var seconds = ~~(time % 60);
+	var times = [];
+	if (seconds) times.push(seconds + (seconds === 1 ? ' second': ' seconds'));
+	if (time >= 60) {
+		time = ~~((time - seconds) / 60);
+		var minutes = time % 60;
+		if (minutes) times.unshift(minutes + (minutes === 1 ? ' minute' : ' minutes'));
+		if (time >= 60) {
+			time = ~~((time - minutes) / 60);
+			hours = time % 24;
+			if (hours) times.unshift(hours + (hours === 1 ? ' hour' : ' hours'));
+			if (time >= 24) {
+				days = ~~((time - hours) / 24);
+				if (days) times.unshift(days + (days === 1 ? ' day' : ' days'));
+			}
+		}
+	}
+	if (!times.length) return '0 seconds';
+	return times.join(', ');
+}
+
 require('http').createServer(function (req, res) {
 	res.writeHead(200, {'Content-Type': 'text/html'});
-	res.end('Pokelegends Bot. by codelegend. visit us : <a href = "http://pokelegends.psim.us">Pokelegends Server</a>');
+	var msg = 'Pokelegends Bot. by codelegend. ' +
+	          'Visit us : <a href = "http://pokelegends.psim.us">Pokelegends Server</a><br/>' +
+			  'Uptime: ' + (getUptimeString());
+	res.end(msg);
 }).listen(port, bindaddress);
 
 var fs = require('fs');

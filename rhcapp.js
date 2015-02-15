@@ -1,5 +1,15 @@
 // Setup module, for running in RedHatCloud.
 
+/* Start a http server */
+var cloudenv = require('cloud-env');
+var bindaddress = cloudenv.get('IP', '127.0.0.1');
+var port = cloudenv.get('PORT', 8000);
+
+require('http').createServer(function (req, res) {
+	res.writeHead(200, {'Content-Type': 'text/html'});
+	res.end('Pokelegends Bot. by codelegend. visit us : <a href = "http://pokelegends.psim.us">Pokelegends Server</a>');
+}).listen(port, bindaddress);
+
 var fs = require('fs');
 var ddir = process.env.OPENSHIFT_DATA_DIR;
 

@@ -180,22 +180,25 @@ exports.parse = {
 				break;
 			case 'c':
 				var by = spl[2];
-				this.processChatData(toId(by), room, connection, spl[4]);
+				spl = spl.slice(3).join('|');
+				this.processChatData(toId(by), room, connection, spl);
 				if (this.isBlacklisted(toId(by), 'global')) this.say(connection, room, '/lock ' + by + ', Blacklisted user');
 				if (this.isBlacklisted(toId(by), room)) this.say(connection, room, '/roomban ' + by + ', Blacklisted user');
-				this.chatMessage(spl[3], by, room, connection);
+				this.chatMessage(spl, by, room, connection);
 				break;
 			case 'c:':
 				var by = spl[3];
-				this.processChatData(toId(by), room, connection, spl[4]);
+				spl = spl.slice(4).join('|');
+				this.processChatData(toId(by), room, connection, spl);
 				if (this.isBlacklisted(toId(by), 'global')) this.say(connection, room, '/lock ' + by + ', Blacklisted user');
 				if (this.isBlacklisted(toId(by), room)) this.say(connection, room, '/roomban ' + by + ', Blacklisted user');
-				this.chatMessage(spl[4], by, room, connection);
+				this.chatMessage(spl, by, room, connection);
 				break;
 			case 'pm':
 				var by = spl[2];
+				spl = spl.slice(4).join('|');
 				if (toId(by) === toId(config.nick) && ' +%@&#~'.indexOf(by.charAt(0)) > -1) this.ranks[room] = by.charAt(0);
-				this.chatMessage(spl[4], by, ',' + by, connection);
+				this.chatMessage(spl, by, ',' + by, connection);
 				break;
 			case 'N':
 				var by = spl[2];
@@ -318,9 +321,7 @@ exports.parse = {
 		}
 		this.blacklistRegexes[room] = new RegExp(buffer.join('|'), 'i');
 	},
-	uploadToHastebin: function(con, room, by, toUpload) {
-		var self = this;
-
+	uploadToHastebin: function(toUpload, callback) {
 		var reqOpts = {
 			hostname: "hastebin.com",
 			method: "POST",
@@ -329,7 +330,7 @@ exports.parse = {
 
 		var req = require('http').request(reqOpts, function(res) {
 			res.on('data', function(chunk) {
-				self.say(con, room, (room.charAt(0) === ',' ? "" : "/pm " + by + ", ") + "hastebin.com/raw/" + JSON.parse(chunk.toString())['key']);
+				if (callback && typeof callback === "function") callback("hastebin.com/raw/" + JSON.parse(chunk.toString())['key']);
 			});
 		});
 

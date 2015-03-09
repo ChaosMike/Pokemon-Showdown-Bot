@@ -287,7 +287,6 @@ exports.parse = {
 		if (blacklist && blacklist[room] && blacklist[room][user]) return true;
 		var blacklistRegexes = this.blacklistRegexes;
 		return (blacklistRegexes && blacklistRegexes[room] && blacklistRegexes[room].test(user));
-		return false;
 	},
 	blacklistUser: function(user, room) {
 		var blacklist = this.settings.blacklist || (this.settings.blacklist = {});

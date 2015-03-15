@@ -17,7 +17,7 @@ exports.serverid = 'lightningstorm';
 
 // The nick and password to log in with
 // If no password is required, leave pass empty
-exports.nick = 'Lightning Bot';
+exports.nick = 'pr0 Bot';
 exports.pass = 'polpol';
 
 // The rooms that should be joined.

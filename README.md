@@ -9,7 +9,6 @@ A chat bot for [Pokémon Showdown][1]. This bot has a number of commands, some h
 Installation
 ------------
 
-[Click here][4] for an in-depth installation guide, courtesy of Rival Nick. Otherwise, basic instructions follow.
 
 Pokémon Showdown Bot requires [node.js][2] to run.
 This bot has not been tested on every `node.js` version possible, but has the same version requirements as [Pokémon Showdown][3]: either v0.6.3 through v0.8.22, or v0.10.2 and up.

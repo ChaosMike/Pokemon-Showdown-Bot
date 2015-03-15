@@ -1,1 +1,1 @@
-web: node heroku.js $PORT
+web: node openshift.js $PORT

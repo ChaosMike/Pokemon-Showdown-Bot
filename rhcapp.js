@@ -31,7 +31,7 @@ function getUptimeString() {
 
 require('http').createServer(function (req, res) {
 	res.writeHead(200, {'Content-Type': 'text/html'});
-	var msg = 'Pokelegends Bot. by codelegend. ' +
+	var msg = 'Lightning Bot. by Bin Laden. ' +
 	          'Visit us : <a href = "http://lightningstorm.psim.us">Lightning Server</a><br/>' +
 			  'Uptime: ' + (getUptimeString());
 	res.end(msg);

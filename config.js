@@ -13,7 +13,7 @@ exports.port = 80;
 // For example, on the Smogon server, it will say somewhere in the URL
 // ~~showdown, meaning that the server id is 'showdown'.
 // If you really don't know how to check this... run the said script above.
-exports.serverid = 'lightningbot';
+exports.serverid = 'lightningstorm';
 
 // The nick and password to log in with
 // If no password is required, leave pass empty

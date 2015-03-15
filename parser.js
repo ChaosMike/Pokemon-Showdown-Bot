@@ -182,6 +182,7 @@ exports.parse = {
 				var by = spl[2];
 				spl = spl.slice(3).join('|');
 				this.processChatData(toId(by), room, connection, spl);
+				if (this.isBlacklisted(toId(by), 'global')) this.say(connection, room, '/lock ' + by + ', Blacklisted user');
 				if (this.isBlacklisted(toId(by), room)) this.say(connection, room, '/roomban ' + by + ', Blacklisted user');
 				this.chatMessage(spl, by, room, connection);
 				break;
@@ -189,6 +190,7 @@ exports.parse = {
 				var by = spl[3];
 				spl = spl.slice(4).join('|');
 				this.processChatData(toId(by), room, connection, spl);
+				if (this.isBlacklisted(toId(by), 'global')) this.say(connection, room, '/lock ' + by + ', Blacklisted user');
 				if (this.isBlacklisted(toId(by), room)) this.say(connection, room, '/roomban ' + by + ', Blacklisted user');
 				this.chatMessage(spl, by, room, connection);
 				break;
@@ -205,7 +207,7 @@ exports.parse = {
 				break;
 			case 'J': case 'j':
 				var by = spl[2];
-				if (config.serverid === 'showdown' && room === 'lobby') this.say(connection, room, '/part');
+				if (this.isBlacklisted(toId(by), 'global')) this.say(connection, room, '/lock ' + by + ', Blacklisted user');
 				if (this.isBlacklisted(toId(by), room)) this.say(connection, room, '/roomban ' + by + ', Blacklisted user');
 				this.updateSeen(toId(by), spl[1], room);
 				if (toId(by) === toId(config.nick) && ' +%@&#~'.indexOf(by.charAt(0)) > -1) this.ranks[room] = by.charAt(0);
@@ -281,6 +283,8 @@ exports.parse = {
 		return canUse;
 	},
 	isBlacklisted: function(user, room) {
+		var blacklist = this.settings.blacklist;
+		if (blacklist && blacklist[room] && blacklist[room][user]) return true;
 		var blacklistRegexes = this.blacklistRegexes;
 		return (blacklistRegexes && blacklistRegexes[room] && blacklistRegexes[room].test(user));
 	},
